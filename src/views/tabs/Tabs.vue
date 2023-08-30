@@ -6,7 +6,7 @@
         <span v-if="item.text">{{ item.text }}</span>
       </div>
 
-      <div class="as-tab-active" :style="{'left':left,'width':`${width}px`}">{{activeName}}</div>
+      <div class="as-tab-active" :style="{ 'left': left, 'width': `${width}px` }">{{ activeName }}</div>
 
     </div>
 
@@ -39,7 +39,7 @@ export default {
       // 当前活跃索引
       currentIndex: 0,
       left: 0,
-      width:0
+      width: 0
     };
   },
   mounted() {
@@ -56,22 +56,41 @@ export default {
         this.currentIndex = this.$children.findIndex(
           (component) => component.name == this.value
         );
-        this.headHeight();
+            this.headHeight();
       });
 
-      window.onresize = () => {
-      return (() => {
-        this.$nextTick(() => {
-          this.headHeight();
-        });
-      })();
-    };
+      window.onresize = this.debounce(() => {
+        return ( () => {
+          this.$nextTick(() => {
+          //  this.headHeight();
+          this.headHeight()
+          });
+        })();
+      });
     },
-    headHeight(){
+    debounce(fn, delay=50) {
+      // 1.定义一个定时器, 保存上一次的定时器
+      let timer = null
+
+      // 2.真正执行的函数
+      const _debounce = function () {
+        // 取消上一次的定时器
+        if (timer) clearTimeout(timer)
+        // 延迟执行
+        timer = setTimeout(() => {
+          // 外部传入的真正要执行的函数
+          fn()
+        }, delay)
+      }
+
+      return _debounce
+    },
+    headHeight() {
+      
       this.offsetWidth = this.width = this.$refs.tabNavItemRefs[0].offsetWidth
       this.left = this.currentIndex * this.offsetWidth + "px";
 
-      console.log(  this.left,this.$refs.tabNavItemRefs[0].offsetWidth)
+      console.log(this.left, this.$refs.tabNavItemRefs[0].offsetWidth)
     },
     // 设置tab点击栏
     setTabBar(tabsPaneInstance) {
@@ -84,7 +103,7 @@ export default {
       });
     },
     handleTabNavClick(item, index) {
-      console.log(item, index,this.$refs.tabNavItemRefs[0].offsetWidth)
+      console.log(item, index, this.$refs.tabNavItemRefs[0].offsetWidth)
       // this.offsetWidth = this.$refs.tabNavItemRefs[0].offsetWidth
       // this.nowPage = page;
       this.title = item.text;
@@ -112,6 +131,7 @@ export default {
     position: relative;
     border-radius: 12px 12px 0 0;
     background-color: @tab-bgcolor;
+
     .tab-nav-item {
       cursor: pointer;
       line-height: 2;
@@ -126,30 +146,32 @@ export default {
       font-weight: 600;
       position: relative;
     }
-    .tab-nav-item.active{
-      color:#f3fafb;
+
+    .tab-nav-item.active {
+      color: #f3fafb;
     }
 
-    
-    .as-tab-active{
+
+    .as-tab-active {
       position: absolute;
       width: 200px;
-        height: 100%;
-        color: #ffffff;
-        left: 0;
-        top: 0;
-        opacity: 1;
-    background: #ffffff;
-    color: #0ba4b9;
-    font-weight: 600;
+      height: 100%;
+      color: #ffffff;
+      left: 0;
+      top: 0;
+      opacity: 1;
+      background: #ffffff;
+      color: #0ba4b9;
+      font-weight: 600;
 
-    display: flex;
+      display: flex;
       justify-content: center;
       align-items: center;
-    border-radius: 12px 12px 0 0;
-    transition: all 0.2s;
+      border-radius: 12px 12px 0 0;
+      transition: all 0.2s;
     }
   }
+
   .v-enter-active,
   .v-leave-active {
     transition: all 0.3s;
@@ -168,4 +190,5 @@ export default {
   /*    transform: translate(-100%);*/
   /*}*/
 
-}</style>
+}
+</style>
